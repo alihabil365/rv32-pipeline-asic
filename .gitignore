@@ -1,0 +1,67 @@
+# --------------------------------------------------
+# AURA32 generated files
+# --------------------------------------------------
+
+# General build outputs
+build/*
+!build/.gitkeep
+
+# Verilator
+obj_dir/
+*.vcd
+*.fst
+*.vpd
+
+# Simulation outputs
+*.out
+*.vvp
+*.wlf
+*.log
+*.jou
+
+# Compiled firmware
+*.elf
+*.bin
+*.hex
+*.mem
+*.map
+*.dump
+*.o
+
+# Yosys synthesis outputs
+*.json
+*.blif
+*.edif
+*_synth.v
+
+# ASIC flow outputs
+runs/
+reports/
+results/
+tmp/
+logs/
+objects/
+*.gds
+*.gdsii
+*.def
+*.lef
+*.odb
+*.spef
+*.sdf
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*~
+*.swp
+*.swo
