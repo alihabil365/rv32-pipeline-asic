@@ -1,4 +1,4 @@
-.PHONY: help tools tree clean
+.PHONY: help tools tree lint-alu test-alu clean
 
 help:
 	@echo "AURA32 Development Commands"
@@ -22,6 +22,19 @@ tools:
 tree:
 	@tree -a -I ".git|obj_dir"
 
+lint-alu:
+	@verilator --lint-only -Wall rtl/core/alu.sv
+	@echo "ALU lint passed."
+
+test-alu: lint-alu
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_alu \
+		-o build/tb_alu.vvp \
+		rtl/core/alu.sv \
+		sim/testbench/tb_alu.sv
+	@vvp build/tb_alu.vvp
+	
 clean:
 	@find build -mindepth 1 ! -name '.gitkeep' -delete
 	@rm -rf obj_dir
