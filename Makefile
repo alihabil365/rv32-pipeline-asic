@@ -1,14 +1,14 @@
 .PHONY: help tools tree lint-alu test-alu clean
 
 help:
-	@echo "AURA32 Development Commands"
+	@echo "RV32 Development Commands"
 	@echo ""
 	@echo "  make tools  Check required development tools"
 	@echo "  make tree   Display the project structure"
 	@echo "  make clean  Remove generated build files"
 
 tools:
-	@echo "Checking AURA32 development tools..."
+	@echo "Checking RV32 development tools..."
 	@echo ""
 	@git --version
 	@gcc --version | head -n 1
@@ -48,9 +48,21 @@ test-regfile: lint-regfile
 		sim/testbench/tb_register_file.sv
 	@vvp build/tb_register_file.vvp
 
+lint-immgen:
+	@verilator --lint-only -Wall rtl/core/immediate_generator.sv
+	@echo "Immediate generator lint passed."
+
+test-immgen: lint-immgen
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_immediate_generator \
+		-o build/tb_immediate_generator.vvp \
+		rtl/core/immediate_generator.sv \
+		sim/testbench/tb_immediate_generator.sv
+	@vvp build/tb_immediate_generator.vvp
+
 clean:
 	@find build -mindepth 1 ! -name '.gitkeep' -delete
 	@rm -rf obj_dir
 	@find . -type f \( -name "*.vcd" -o -name "*.fst" -o -name "*.vvp" \) -delete
 	@echo "Generated files removed."
-	
