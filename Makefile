@@ -34,9 +34,23 @@ test-alu: lint-alu
 		rtl/core/alu.sv \
 		sim/testbench/tb_alu.sv
 	@vvp build/tb_alu.vvp
-	
+
+lint-regfile:
+	@verilator --lint-only -Wall rtl/core/register_file.sv
+	@echo "Register file lint passed."
+
+test-regfile: lint-regfile
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_register_file \
+		-o build/tb_register_file.vvp \
+		rtl/core/register_file.sv \
+		sim/testbench/tb_register_file.sv
+	@vvp build/tb_register_file.vvp
+
 clean:
 	@find build -mindepth 1 ! -name '.gitkeep' -delete
 	@rm -rf obj_dir
 	@find . -type f \( -name "*.vcd" -o -name "*.fst" -o -name "*.vvp" \) -delete
 	@echo "Generated files removed."
+	
