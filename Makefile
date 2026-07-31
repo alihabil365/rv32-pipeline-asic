@@ -3,6 +3,21 @@
 .PHONY: lint-imem test-imem
 .PHONY: lint-dmem test-dmem
 .PHONY: lint-single-cycle test-single-cycle test-all
+.PHONY: lint-if-id test-if-id
+
+lint-if-id:
+	@verilator --lint-only -Wall rtl/pipeline/if_id_register.sv
+	@echo "IF/ID pipeline register lint passed."
+
+test-if-id: lint-if-id
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_if_id_register \
+		-o build/tb_if_id_register.vvp \
+		rtl/pipeline/if_id_register.sv \
+		sim/testbench/tb_if_id_register.sv
+	@vvp build/tb_if_id_register.vvp
+
 
 lint-branch:
 	@verilator --lint-only -Wall rtl/core/branch_unit.sv
@@ -76,7 +91,7 @@ test-single-cycle: lint-single-cycle
 
 test-all: test-alu test-regfile test-immgen test-control test-pc \
 	test-branch test-imem test-dmem test-single-cycle
-	
+
 help:
 	@echo "RV32 Development Commands"
 	@echo ""
