@@ -74,7 +74,19 @@ test-control: lint-control
 		sim/testbench/tb_control_unit.sv
 	@vvp build/tb_control_unit.vvp
 
+lint-pc:
+	@verilator --lint-only -Wall rtl/core/program_counter.sv
+	@echo "Program counter lint passed."
 
+test-pc: lint-pc
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_program_counter \
+		-o build/tb_program_counter.vvp \
+		rtl/core/program_counter.sv \
+		sim/testbench/tb_program_counter.sv
+	@vvp build/tb_program_counter.vvp
+	
 clean:
 	@find build -mindepth 1 ! -name '.gitkeep' -delete
 	@rm -rf obj_dir
