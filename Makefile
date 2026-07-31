@@ -1,5 +1,82 @@
 .PHONY: help tools tree lint-alu test-alu clean
+.PHONY: lint-branch test-branch
+.PHONY: lint-imem test-imem
+.PHONY: lint-dmem test-dmem
+.PHONY: lint-single-cycle test-single-cycle test-all
 
+lint-branch:
+	@verilator --lint-only -Wall rtl/core/branch_unit.sv
+	@echo "Branch unit lint passed."
+
+test-branch: lint-branch
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_branch_unit \
+		-o build/tb_branch_unit.vvp \
+		rtl/core/branch_unit.sv \
+		sim/testbench/tb_branch_unit.sv
+	@vvp build/tb_branch_unit.vvp
+
+lint-imem:
+	@verilator --lint-only -Wall rtl/memory/instruction_memory.sv
+	@echo "Instruction memory lint passed."
+
+test-imem: lint-imem
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_instruction_memory \
+		-o build/tb_instruction_memory.vvp \
+		rtl/memory/instruction_memory.sv \
+		sim/testbench/tb_instruction_memory.sv
+	@vvp build/tb_instruction_memory.vvp
+
+lint-dmem:
+	@verilator --lint-only -Wall rtl/memory/data_memory.sv
+	@echo "Data memory lint passed."
+
+test-dmem: lint-dmem
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_data_memory \
+		-o build/tb_data_memory.vvp \
+		rtl/memory/data_memory.sv \
+		sim/testbench/tb_data_memory.sv
+	@vvp build/tb_data_memory.vvp
+
+lint-single-cycle:
+	@verilator --lint-only -Wall \
+		--top-module single_cycle_core \
+		rtl/core/alu.sv \
+		rtl/core/register_file.sv \
+		rtl/core/immediate_generator.sv \
+		rtl/core/control_unit.sv \
+		rtl/core/program_counter.sv \
+		rtl/core/branch_unit.sv \
+		rtl/memory/instruction_memory.sv \
+		rtl/memory/data_memory.sv \
+		rtl/top/single_cycle_core.sv
+	@echo "Single-cycle core lint passed."
+
+test-single-cycle: lint-single-cycle
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_single_cycle_core \
+		-o build/tb_single_cycle_core.vvp \
+		rtl/core/alu.sv \
+		rtl/core/register_file.sv \
+		rtl/core/immediate_generator.sv \
+		rtl/core/control_unit.sv \
+		rtl/core/program_counter.sv \
+		rtl/core/branch_unit.sv \
+		rtl/memory/instruction_memory.sv \
+		rtl/memory/data_memory.sv \
+		rtl/top/single_cycle_core.sv \
+		sim/testbench/tb_single_cycle_core.sv
+	@vvp build/tb_single_cycle_core.vvp
+
+test-all: test-alu test-regfile test-immgen test-control test-pc \
+	test-branch test-imem test-dmem test-single-cycle
+	
 help:
 	@echo "RV32 Development Commands"
 	@echo ""
