@@ -61,6 +61,20 @@ test-immgen: lint-immgen
 		sim/testbench/tb_immediate_generator.sv
 	@vvp build/tb_immediate_generator.vvp
 
+lint-control:
+	@verilator --lint-only -Wall rtl/core/control_unit.sv
+	@echo "Control unit lint passed."
+
+test-control: lint-control
+	@mkdir -p build
+	@iverilog -g2012 -Wall \
+		-s tb_control_unit \
+		-o build/tb_control_unit.vvp \
+		rtl/core/control_unit.sv \
+		sim/testbench/tb_control_unit.sv
+	@vvp build/tb_control_unit.vvp
+
+
 clean:
 	@find build -mindepth 1 ! -name '.gitkeep' -delete
 	@rm -rf obj_dir
